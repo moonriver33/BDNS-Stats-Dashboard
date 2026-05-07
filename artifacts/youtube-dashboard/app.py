@@ -453,8 +453,6 @@ else:
     st.warning(f"⚠️ 현재 페이스 유지 시 목표까지 **{format_number(int(diff))} 부족** 예상. 남은 {remaining_ep}화에서 회차당 **{format_number(int(needed_per_ep))}** 필요!")
 
 # ── Footer ────────────────────────────────────────────────────────────────────
-st.markdown("---")
-st.markdown(f"<p style='color:#444; font-size:0.78rem; text-align:right;'>마지막 업데이트: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y년 %m월 %d일 %H:%M:%S KST'))))
-
-time.sleep(1)
-st.rerun()
+KST = datetime.timezone(datetime.timedelta(hours=9))
+now_kst = datetime.datetime.now(KST).strftime("%Y년 %m월 %d일 %H:%M:%S KST")
+st.markdown(f"<p style='color:#444; font-size:0.78rem; text-align:right;'>마지막 업데이트: {now_kst}</p>", unsafe_allow_html=True)
