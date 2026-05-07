@@ -454,7 +454,7 @@ else:
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.markdown("---")
-st.markdown(f"<p style='color:#444; font-size:0.78rem; text-align:right;'>마지막 업데이트: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y년 %m월 %d일 %H:%M:%S KST'))
+st.markdown(f"<p style='color:#444; font-size:0.78rem; text-align:right;'>마지막 업데이트: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y년 %m월 %d일 %H:%M:%S KST')))
 
 time.sleep(1)
 st.rerun()
