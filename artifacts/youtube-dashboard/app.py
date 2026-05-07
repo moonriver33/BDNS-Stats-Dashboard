@@ -373,13 +373,7 @@ for v in videos_sorted:
                 
                 new_dot = "<span style='color:#ff0000; font-size:0.7rem; font-weight:700; margin-left:4px;'>● NEW</span>" if is_new else ""
                 likes_html = f"<div style='color:#555; font-size:0.75rem; margin-top:4px;'>👍 {c['likes']}</div>" if c["likes"] > 0 else ""
-                st.markdown(f"""<div class='comment-card'>
-                    <div class='comment-author'>{c['author']}{new_dot}
-                        <span class='comment-date'>{format_dt(c['published_at'])}</span>
-                    </div>
-                    <div style='margin-top:4px;'>{c['text']}</div>
-                    {likes_html}
-                </div>""", unsafe_allow_html=True)
+                st.markdown(f"<div class='comment-card'><div class='comment-author'>{c['author']}{new_dot}<span class='comment-date'>{format_dt(c['published_at'])}</span></div><div style='margin-top:4px;'>{c['text']}</div>{likes_html}</div>", unsafe_allow_html=True)
 
 # ── 퍼포먼스 트래킹 ─────────────────────────────────────────────────────────────
 st.markdown("### 🎯 퍼포먼스 트래킹")
