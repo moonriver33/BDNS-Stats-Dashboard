@@ -196,17 +196,8 @@ def format_dt(iso: str) -> str:
 with st.sidebar:
     st.markdown("## ⚙️ 설정")
     st.markdown("---")
-    api_key = st.text_input(
-        "YouTube Data API v3 Key",
-        type="password",
-        placeholder="AIza...",
-        help="Google Cloud Console에서 발급받은 API 키를 입력하세요.",
-    )
-    playlist_id = st.text_input(
-        "Playlist ID",
-        placeholder="PLxxxxxxxxxxxxxxxx",
-        help="유튜브 재생목록 URL의 'list=' 뒤에 오는 값입니다.",
-    )
+    api_key = st.secrets["AIzaSyD9a_uMpMNCzwiDyFaXt-rbztiZq7S_KWo"]
+    playlist_id = st.secrets["PL4P8Dv_rpsNxzSuSo10tlkS5Bou21qVNM"]
     fetch_btn = st.button("🔄  데이터 불러오기", use_container_width=True)
     st.markdown("---")
     st.markdown(
