@@ -229,7 +229,18 @@ def fetch_recent_comments(api_key, video_id, max_results=5):
             "likes": top.get("likeCount", 0),
         })
     return comments
-
+    
+def has_new_comment(comments):
+    """앱 실행 시점 기준 1시간 내 새 댓글 여부"""
+    now = datetime.datetime.now(datetime.timezone.utc)
+    for c in comments:
+        try:
+            dt = datetime.datetime.fromisoformat(c["published_at"].replace("Z", "+00:00"))
+            if (now - dt).total_seconds() < 3600:
+                return True
+        except:
+            pass
+    return False
 
 def format_dt(iso):
     try:
@@ -325,7 +336,7 @@ for v in videos_sorted:
             <div class='ep-label'>{ep_label}</div>
             <div class='ep-guest'>{guest}</div>
             <div class='ep-stats'>
-                <span>👁 {views}</span>
+                <span>▶️ {views}</span>
                 <span>👍 {likes}</span>
                 <span>💬 {comments}</span>
             </div>
@@ -343,7 +354,7 @@ st.markdown("### 💬 회차별 최근 댓글")
 for v in videos_sorted:
     ep_label, guest = parse_ep_guest(v["title"])
     s = stats.get(v["videoId"], {})
-    label = f"**{ep_label} {guest}** · 👁 {format_number(s.get('views',0))} · 👍 {format_number(s.get('likes',0))} · 💬 {format_number(s.get('comments',0))}"
+    label = f"**{ep_label} {guest}** · ▶️ {format_number(s.get('views',0))} · 👍 {format_number(s.get('likes',0))} · 💬 {format_number(s.get('comments',0))}"
     with st.expander(label, expanded=False):
         with st.spinner("댓글 불러오는 중..."):
             comments = fetch_recent_comments(api_key, v["videoId"], max_results=5)
