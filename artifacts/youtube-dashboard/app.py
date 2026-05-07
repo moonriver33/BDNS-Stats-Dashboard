@@ -132,9 +132,9 @@ YT_API = "https://www.googleapis.com/youtube/v3"
 
 def format_number(n):
     if n >= 1_000_000:
-        return f"{n/1_000_000:.1f}M"
+        return f"{n/1_000_000:.2f}M"
     if n >= 1_000:
-        return f"{n/1_000:.1f}K"
+        return f"{n:,}"
     return str(n)
 
 
