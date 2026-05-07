@@ -269,7 +269,7 @@ with st.sidebar:
 
 # ── Header ────────────────────────────────────────────────────────────────────
 st.markdown("<h1>▶ 입금 바랍니다 <span class='live-badge'>LIVE</span></h1>", unsafe_allow_html=True)
-st.markdown("<p style='color:#666; margin-top:-0.5rem;'>웹시리즈 성과 관리 대시보드</p>", unsafe_allow_html=True)
+st.markdown("<p style='color:#666; margin-top:-0.5rem;'>입금 바랍니다 퍼포먼스 대시보드</p>", unsafe_allow_html=True)
 st.markdown("---")
 
 if fetch_btn:
@@ -381,6 +381,82 @@ for v in videos_sorted:
                     {likes_html}
                 </div>""", unsafe_allow_html=True)
 
+# ── 퍼포먼스 트래킹 ─────────────────────────────────────────────────────────────
+st.markdown("### 🎯 퍼포먼스 트래킹")
+
+TOTAL_EP = 8
+GOAL_PER_EP = 2_000_000
+TOTAL_GOAL = TOTAL_EP * GOAL_PER_EP  # 16M
+
+current_ep_count = len(videos)
+total_views = sum(s.get("views", 0) for s in stats.values())
+avg_views = total_views / current_ep_count if current_ep_count else 0
+remaining_ep = TOTAL_EP - current_ep_count
+needed_per_ep = (TOTAL_GOAL - total_views) / remaining_ep if remaining_ep > 0 else 0
+projected_total = avg_views * TOTAL_EP
+achievement_rate = total_views / TOTAL_GOAL * 100
+
+# 상단 지표
+c1, c2, c3 = st.columns(3)
+c1.metric("📹 발행 에피소드", f"{current_ep_count} / {TOTAL_EP}화")
+c2.metric("👁 누적 조회수", format_number(total_views))
+c3.metric("🎯 목표까지 남은 조회수", format_number(max(0, TOTAL_GOAL - total_views)))
+
+c4, c5, c6 = st.columns(3)
+c4.metric("📊 회차별 평균 조회수", format_number(int(avg_views)))
+c5.metric("🚀 남은 회차당 필요 조회수", format_number(int(needed_per_ep)))
+c6.metric("📈 현재 페이스 예상 최종 조회수", format_number(int(projected_total)))
+
+# 달성률 진행바
+st.markdown(f"""
+<div style='margin: 20px 0 8px;'>
+    <div style='display:flex; justify-content:space-between; color:#888; font-size:0.8rem; margin-bottom:6px;'>
+        <span>전체 목표 달성률</span>
+        <span>{achievement_rate:.1f}% / 100%</span>
+    </div>
+    <div style='background:#1a1a1a; border-radius:8px; height:16px; overflow:hidden;'>
+        <div style='background: linear-gradient(90deg, #ff0000, #ff4444); height:100%; width:{min(achievement_rate, 100):.1f}%; border-radius:8px; transition: width 0.5s;'></div>
+    </div>
+    <div style='display:flex; justify-content:space-between; color:#555; font-size:0.75rem; margin-top:4px;'>
+        <span>0</span>
+        <span>목표 16M</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# EP별 목표 대비 달성 현황
+st.markdown("#### 회차별 2M 목표 달성 현황")
+
+for v in videos_sorted:
+    ep_label, guest = parse_ep_guest(v["title"])
+    s = stats.get(v["videoId"], {})
+    views = s.get("views", 0)
+    rate = min(views / GOAL_PER_EP * 100, 100)
+    color = "#00cc66" if views >= GOAL_PER_EP else "#ff0000"
+    status = "✅ 달성" if views >= GOAL_PER_EP else f"{rate:.1f}%"
+
+    st.markdown(f"""
+    <div style='margin-bottom:12px;'>
+        <div style='display:flex; justify-content:space-between; margin-bottom:4px;'>
+            <span style='font-weight:700; color:#f0f0f0;'>{ep_label} {guest}</span>
+            <span style='color:{color}; font-weight:700; font-size:0.85rem;'>{format_number(views)} {status}</span>
+        </div>
+        <div style='background:#1a1a1a; border-radius:6px; height:10px; overflow:hidden;'>
+            <div style='background:{color}; height:100%; width:{rate:.1f}%; border-radius:6px;'></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# 페이스 분석 코멘트
+st.markdown("<br>", unsafe_allow_html=True)
+if projected_total >= TOTAL_GOAL:
+    diff = projected_total - TOTAL_GOAL
+    st.success(f"🚀 현재 페이스 유지 시 목표 **16M 초과 달성** 예상! (+{format_number(int(diff))})")
+else:
+    diff = TOTAL_GOAL - projected_total
+    st.warning(f"⚠️ 현재 페이스 유지 시 목표까지 **{format_number(int(diff))} 부족** 예상. 남은 {remaining_ep}화에서 회차당 **{format_number(int(needed_per_ep))}** 필요!")
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.markdown("---")
