@@ -196,8 +196,8 @@ def format_dt(iso: str) -> str:
 with st.sidebar:
     st.markdown("## ⚙️ 설정")
     st.markdown("---")
-    api_key = st.secrets["AIzaSyD9a_uMpMNCzwiDyFaXt-rbztiZq7S_KWo"]
-    playlist_id = st.secrets["PL4P8Dv_rpsNxzSuSo10tlkS5Bou21qVNM"]
+    api_key = st.secrets["YOUTUBE_API_KEY"]
+    playlist_id = st.secrets["PLAYLIST_ID"]
     fetch_btn = st.button("🔄  데이터 불러오기", use_container_width=True)
     st.markdown("---")
     st.markdown(
