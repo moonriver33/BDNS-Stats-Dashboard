@@ -441,7 +441,7 @@ for v in videos_sorted:
     <div style='margin-bottom:12px;'>
         <div style='display:flex; justify-content:space-between; margin-bottom:4px;'>
             <span style='font-weight:700; color:#f0f0f0;'>{ep_label} {guest}</span>
-            <span style='color:{color}; font-weight:700; font-size:0.85rem;'>{format_number(views)} {status}</span>
+           <span style='font-size:0.85rem;'><span style='color:#ffffff; font-weight:700;'>{format_number(views)}</span> <span style='color:{color}; font-weight:700;'>{status}</span></span>
         </div>
         <div style='background:#1a1a1a; border-radius:6px; height:10px; overflow:hidden;'>
             <div style='background:{color}; height:100%; width:{rate:.1f}%; border-radius:6px;'></div>
