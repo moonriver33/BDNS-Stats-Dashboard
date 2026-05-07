@@ -350,26 +350,37 @@ st.markdown("---")
 
 # ── 댓글 토글 ─────────────────────────────────────────────────────────────────
 st.markdown("### 💬 회차별 최근 댓글")
-
 for v in videos_sorted:
     ep_label, guest = parse_ep_guest(v["title"])
     s = stats.get(v["videoId"], {})
-    label = f"**{ep_label} {guest}** · ▶️ {format_number(s.get('views',0))} · 👍 {format_number(s.get('likes',0))} · 💬 {format_number(s.get('comments',0))}"
+    
+    comments = fetch_recent_comments(api_key, v["videoId"], max_results=5)
+    new_badge = " 🔴 N" if has_new_comment(comments) else ""
+    
+    label = f"**{ep_label} {guest}**{new_badge}  \n▶️ {format_number(s.get('views',0))} · 👍 {format_number(s.get('likes',0))} · 💬 {format_number(s.get('comments',0))}"
+    
     with st.expander(label, expanded=False):
-        with st.spinner("댓글 불러오는 중..."):
-            comments = fetch_recent_comments(api_key, v["videoId"], max_results=5)
         if not comments:
             st.markdown("<p style='color:#555; font-size:0.85rem;'>댓글이 없거나 비활성화된 영상입니다.</p>", unsafe_allow_html=True)
         else:
             for c in comments:
+                is_new = False
+                try:
+                    dt = datetime.datetime.fromisoformat(c["published_at"].replace("Z", "+00:00"))
+                    is_new = (datetime.datetime.now(datetime.timezone.utc) - dt).total_seconds() < 3600
+                except:
+                    pass
+                
+                new_dot = "<span style='color:#ff0000; font-size:0.7rem; font-weight:700; margin-left:4px;'>● NEW</span>" if is_new else ""
                 likes_html = f"<div style='color:#555; font-size:0.75rem; margin-top:4px;'>👍 {c['likes']}</div>" if c["likes"] > 0 else ""
                 st.markdown(f"""<div class='comment-card'>
-                    <div class='comment-author'>{c['author']}
+                    <div class='comment-author'>{c['author']}{new_dot}
                         <span class='comment-date'>{format_dt(c['published_at'])}</span>
                     </div>
                     <div style='margin-top:4px;'>{c['text']}</div>
                     {likes_html}
                 </div>""", unsafe_allow_html=True)
+
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.markdown("---")
