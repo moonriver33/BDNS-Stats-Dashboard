@@ -348,7 +348,7 @@ st.markdown(cards_html, unsafe_allow_html=True)
 st.markdown("---")
 
 # ── 통합 최신 댓글 ─────────────────────────────────────────────────────────────
-st.markdown("### 🔔 전체 최신 댓글 TOP 5")
+st.markdown("### 🔔 전체 최신 댓글")
 
 all_comments = []
 for v in videos_sorted:
