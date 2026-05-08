@@ -129,6 +129,47 @@ h2, h3 { color: #f0f0f0; font-weight: 700; }
 REFRESH_INTERVAL = 10 * 60
 YT_API = "https://www.googleapis.com/youtube/v3"
 
+# ── 통합 최신 댓글 ─────────────────────────────────────────────────────────────
+st.markdown("### 🔔 전체 최신 댓글 TOP 5")
+
+all_comments = []
+for v in videos_sorted:
+    ep_label, guest = parse_ep_guest(v["title"])
+    comments = fetch_recent_comments(api_key, v["videoId"], max_results=10)
+    for c in comments:
+        c["ep_label"] = ep_label
+        c["guest"] = guest
+        all_comments.append(c)
+
+# 시간순 정렬
+def comment_dt(c):
+    try:
+        return datetime.datetime.fromisoformat(c["published_at"].replace("Z", "+00:00"))
+    except:
+        return datetime.datetime.min.replace(tzinfo=datetime.timezone.utc)
+
+all_comments.sort(key=comment_dt, reverse=True)
+top5 = all_comments[:5]
+
+KST = datetime.timezone(datetime.timedelta(hours=9))
+now_kst = datetime.datetime.now(KST)
+
+for c in top5:
+    try:
+        dt = datetime.datetime.fromisoformat(c["published_at"].replace("Z", "+00:00")).astimezone(KST)
+        is_new = (now_kst - dt).total_seconds() < 3600
+        dt_str = dt.strftime("%Y.%m.%d %H:%M")
+    except:
+        is_new = False
+        dt_str = c["published_at"]
+
+    new_dot = "<span style='color:#ff0000; font-size:0.7rem; font-weight:700; margin-left:4px;'>● NEW</span>" if is_new else ""
+    ep_tag = f"<span style='background:#ff0000; color:#fff; font-size:0.68rem; font-weight:700; padding:1px 7px; border-radius:4px; margin-right:6px;'>{c['ep_label']} {c['guest']}</span>"
+    likes_html = f"<div style='color:#555; font-size:0.75rem; margin-top:4px;'>👍 {c['likes']}</div>" if c["likes"] > 0 else ""
+
+    st.markdown(f"<div class='comment-card'><div class='comment-author'>{ep_tag}{c['author']}{new_dot}<span class='comment-date'>{dt_str}</span></div><div style='margin-top:4px;'>{c['text']}</div>{likes_html}</div>", unsafe_allow_html=True)
+
+st.markdown("---")
 
 def format_number(n):
     if n >= 1_000_000:
@@ -140,7 +181,7 @@ def format_number(n):
 
 def parse_ep_guest(title):
     """제목에서 EP번호와 게스트명 파싱
-    예: '어쩌구 저쩌구 | 입금 바랍니다 EP3 기리보이'
+    예: '어쩌구 저쩌구 | 입금 바랍니다 EP3 기리고'
     """
     match = re.search(r'EP\s*(\d+)\s+(.+?)(?:\s*\|.*)?$', title, re.IGNORECASE)
     if match:
