@@ -389,7 +389,7 @@ for c in top5:
     st.markdown(f"<div class='comment-card'><div class='comment-author'>{ep_tag}{c['author']}{new_dot}<span class='comment-date'>{dt_str}</span></div><div style='margin-top:4px;'>{c['text']}</div>{likes_html}</div>", unsafe_allow_html=True)
     btn_key = f"translate_top5_{top5.index(c)}"
 try:
-    is_korean = all('\uAC00' <= char <= '\uD7A3' or not char.isalpha() for char in c['text'] if char.strip())
+    is_korean = any('\uAC00' <= char <= '\uD7A3' for char in c['text'])
 except:
     is_korean = False
 
@@ -431,7 +431,7 @@ for v in videos_sorted:
                 st.markdown(f"<div class='comment-card'><div class='comment-author'>{c['author']}{new_dot}<span class='comment-date'>{format_dt(c['published_at'])}</span></div><div style='margin-top:4px;'>{c['text']}</div>{likes_html}</div>", unsafe_allow_html=True)
                 btn_key = f"translate_{v['videoId']}_{comments.index(c)}"
                 try:
-                    is_korean = all('\uAC00' <= char <= '\uD7A3' or not char.isalpha() for char in c['text'] if char.strip())
+                    is_korean = any('\uAC00' <= char <= '\uD7A3' for char in c['text'])
                 except:
                     is_korean = False
 
