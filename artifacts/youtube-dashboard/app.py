@@ -388,19 +388,19 @@ for c in top5:
 
     st.markdown(f"<div class='comment-card'><div class='comment-author'>{ep_tag}{c['author']}{new_dot}<span class='comment-date'>{dt_str}</span></div><div style='margin-top:4px;'>{c['text']}</div>{likes_html}</div>", unsafe_allow_html=True)
     btn_key = f"translate_top5_{top5.index(c)}"
-try:
-    is_korean = any('\uAC00' <= char <= '\uD7A3' for char in c['text'])
-except:
-    is_korean = False
+    try:
+        is_korean = any('\uAC00' <= char <= '\uD7A3' for char in c['text'])
+    except:
+        is_korean = False
 
-if not is_korean:
-    if st.button("🌐 번역", key=btn_key):
-        try:
-            result = GoogleTranslator(source='auto', target='ko').translate(c['text'])
-            st.markdown(f"<div style='background:#111; border-left:3px solid #555; padding:6px 10px; font-size:0.85rem; color:#aaa; margin-top:4px;'>🌐 {result}</div>", unsafe_allow_html=True)
-        except:
-            st.warning("번역 실패. 잠시 후 다시 시도해주세요.")
-
+    if not is_korean:
+        if st.button("🌐 번역", key=btn_key):
+            try:
+                result = GoogleTranslator(source='auto', target='ko').translate(c['text'])
+                st.markdown(f"<div style='background:#111; border-left:3px solid #555; padding:6px 10px; font-size:0.85rem; color:#aaa; margin-top:4px;'>🌐 {result}</div>", unsafe_allow_html=True)
+            except:
+                st.warning("번역 실패. 잠시 후 다시 시도해주세요.")
+    
 st.markdown("---")
 
 # ── 댓글 토글 ─────────────────────────────────────────────────────────────────
@@ -435,13 +435,13 @@ for v in videos_sorted:
                 except:
                     is_korean = False
 
-                    if not is_korean:
-                        if st.button("🌐 번역", key=btn_key):
-                            try:
-                                result = GoogleTranslator(source='auto', target='ko').translate(c['text'])
-                                st.markdown(f"<div style='background:#111; border-left:3px solid #555; padding:6px 10px; font-size:0.85rem; color:#aaa; margin-top:4px;'>🌐 {result}</div>", unsafe_allow_html=True)
-                            except:
-                                st.warning("번역 실패. 잠시 후 다시 시도해주세요.")
+                if not is_korean:
+                    if st.button("🌐 번역", key=btn_key):
+                        try:
+                            result = GoogleTranslator(source='auto', target='ko').translate(c['text'])
+                            st.markdown(f"<div style='background:#111; border-left:3px solid #555; padding:6px 10px; font-size:0.85rem; color:#aaa; margin-top:4px;'>🌐 {result}</div>", unsafe_allow_html=True)
+                        except:
+                            st.warning("번역 실패. 잠시 후 다시 시도해주세요.")
 
 # ── 퍼포먼스 트래킹 ─────────────────────────────────────────────────────────────
 st.markdown("### 🎯 퍼포먼스 트래킹")
