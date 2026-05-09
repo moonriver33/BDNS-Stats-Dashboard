@@ -387,7 +387,7 @@ for c in top5:
     likes_html = f"<div style='color:#555; font-size:0.75rem; margin-top:4px;'>👍 {c['likes']}</div>" if c["likes"] > 0 else ""
 
     st.markdown(f"<div class='comment-card'><div class='comment-author'>{ep_tag}{c['author']}{new_dot}<span class='comment-date'>{dt_str}</span></div><div style='margin-top:4px;'>{c['text']}</div>{likes_html}</div>", unsafe_allow_html=True)
-    btn_key = f"translate_{v['videoId']}_{comments.index(c)}"
+    btn_key = f"translate_top5_{top5.index(c)}"
 try:
     is_korean = all('\uAC00' <= char <= '\uD7A3' or not char.isalpha() for char in c['text'] if char.strip())
 except:
