@@ -447,9 +447,9 @@ for v in videos_sorted:
                             st.warning("번역 실패. 잠시 후 다시 시도해주세요.")
 
 # ── WRITER'S BRIEF ─────────────────────────────────────────────────────────────────
-st.markdown("### WRITER'S BRIEFING")
+st.markdown("### WRITER'S BRIEF")
 
-if st.button("📊 브리핑 생성", use_container_width=False):
+if st.button("👩🏻‍💻 브리핑 생성", use_container_width=False):
     total_views = sum(s.get("views", 0) for s in stats.values())
     total_likes = sum(s.get("likes", 0) for s in stats.values())
     total_comments_count = sum(s.get("comments", 0) for s in stats.values())
@@ -463,13 +463,15 @@ if st.button("📊 브리핑 생성", use_container_width=False):
     recent_comments_text = ""
     for v in videos_sorted:
         ep_label, guest = parse_ep_guest(v["title"])
-        recent = fetch_recent_comments(api_key, v["videoId"], max_results=10)
+        recent = fetch_recent_comments(api_key, v["videoId"], max_results=15)
         for c in recent:
             recent_comments_text += f"[{ep_label} {guest}] {c['text']}\n"
 
     prompt = f"""
-너는 유튜브 웹시리즈 <입금 바랍니다>의 기획/대본/편집을 맡은 메인 PD Rick을 보조하는 보조 작가야.
+너는 유튜브 웹시리즈 <입금 바랍니다>의 기획/대본/편집을 맡은 메인 PD Rick을 보조하는 보조 작가야(Rick에게 반말함).
 아래 데이터와 최신 댓글을 보고 코멘트나 인사이트를 5~7문장으로 작성해줘.
+스핀오프, 외전 같은 코멘트는 퀄리티에 대한 긍정포인트야
+게스트 라인업은 1이광수, 2김채원, 3기리고(노재원,전소영,현우석), 4안유진, 5공승연, 6남편들(공명,진선규), 7김대명, 8TBD.
 핵심 인사이트, 댓글 반응 온도, 회당 200만뷰의 메가히트를 위한 전향적 제언 위주로.
 숫자는 구체적으로 언급하고, 마지막엔 한 줄 총평으로 마무리해줘.
 
@@ -482,7 +484,7 @@ if st.button("📊 브리핑 생성", use_container_width=False):
 회차별 현황:
 {ep_summary}
 
-최신 댓글 샘플 (최대 30개):
+최신 댓글 샘플 (최대 45개):
 {recent_comments_text}
 """
 
