@@ -446,65 +446,6 @@ for v in videos_sorted:
                         except:
                             st.warning("번역 실패. 잠시 후 다시 시도해주세요.")
 
-# ── WRITER'S BRIEF ─────────────────────────────────────────────────────────────────
-st.markdown("### WRITER'S BRIEF")
-
-if st.button("👩🏻‍💻 브리핑 생성", use_container_width=False):
-    total_views = sum(s.get("views", 0) for s in stats.values())
-    total_likes = sum(s.get("likes", 0) for s in stats.values())
-    total_comments_count = sum(s.get("comments", 0) for s in stats.values())
-
-    ep_summary = ""
-    for v in videos_sorted:
-        ep_label, guest = parse_ep_guest(v["title"])
-        s = stats.get(v["videoId"], {})
-        ep_summary += f"{ep_label} {guest}: 조회수 {format_number(s.get('views',0))}, 좋아요 {format_number(s.get('likes',0))}, 댓글 {format_number(s.get('comments',0))}\n"
-
-    recent_comments_text = ""
-    for v in videos_sorted:
-        ep_label, guest = parse_ep_guest(v["title"])
-        recent = fetch_recent_comments(api_key, v["videoId"], max_results=15)
-        for c in recent:
-            recent_comments_text += f"[{ep_label} {guest}] {c['text']}\n"
-
-    prompt = f"""
-너는 유튜브 웹시리즈 <입금 바랍니다>의 기획/대본/편집을 맡은 메인 PD Rick을 보조하는 보조 작가야(Rick에게 반말함).
-아래 데이터와 최신 댓글을 보고 코멘트나 인사이트를 5~7문장으로 작성해줘.
-스핀오프, 외전 같은 코멘트는 퀄리티에 대한 긍정포인트야
-게스트 라인업은 1이광수, 2김채원, 3기리고(노재원,전소영,현우석), 4안유진, 5공승연, 6남편들(공명,진선규), 7김대명, 8TBD.
-핵심 인사이트, 댓글 반응 온도, 회당 200만뷰의 메가히트를 위한 전향적 제언 위주로.
-숫자는 구체적으로 언급하고, 마지막엔 한 줄 총평으로 마무리해줘.
-
-현재 발행: {len(videos)}화
-누적 조회수: {format_number(total_views)}
-누적 좋아요: {format_number(total_likes)}
-누적 댓글: {format_number(total_comments_count)}
-목표: 8화 × 200만 = 1600만
-
-회차별 현황:
-{ep_summary}
-
-최신 댓글 샘플 (최대 45개):
-{recent_comments_text}
-"""
-
-    with st.spinner("브리핑 생성 중..."):
-        try:
-            import google.generativeai as genai
-            gemini_key = st.secrets["GEMINI_API_KEY"]
-            genai.configure(api_key=gemini_key)
-            model = genai.GenerativeModel("gemini-2.5-flash")
-            response = model.generate_content(prompt)
-            st.markdown(f"""
-            <div style='background:#1a1a1a; border-left:4px solid #ff0000; border-radius:8px; padding:1rem 1.2rem; color:#e0e0e0; font-size:0.92rem; line-height:1.7;'>
-            {response.text}
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.error(f"브리핑 생성 실패: {e}")
-
-st.markdown("---")
-
 # ── 퍼포먼스 트래킹 ─────────────────────────────────────────────────────────────
 st.markdown("### 🎯 퍼포먼스 트래킹")
 
@@ -581,6 +522,65 @@ if projected_total >= TOTAL_GOAL:
 else:
     diff = TOTAL_GOAL - projected_total
     st.warning(f"⚠️ 현재 페이스 유지 시 목표까지 **{format_number(int(diff))} 부족** 예상. 남은 {remaining_ep}화에서 회차당 **{format_number(int(needed_per_ep))}** 필요!")
+
+# ── WRITER'S BRIEF ─────────────────────────────────────────────────────────────────
+st.markdown("### WRITER'S BRIEF")
+
+if st.button("👩🏻‍💻 브리핑 생성", use_container_width=False):
+    total_views = sum(s.get("views", 0) for s in stats.values())
+    total_likes = sum(s.get("likes", 0) for s in stats.values())
+    total_comments_count = sum(s.get("comments", 0) for s in stats.values())
+
+    ep_summary = ""
+    for v in videos_sorted:
+        ep_label, guest = parse_ep_guest(v["title"])
+        s = stats.get(v["videoId"], {})
+        ep_summary += f"{ep_label} {guest}: 조회수 {format_number(s.get('views',0))}, 좋아요 {format_number(s.get('likes',0))}, 댓글 {format_number(s.get('comments',0))}\n"
+
+    recent_comments_text = ""
+    for v in videos_sorted:
+        ep_label, guest = parse_ep_guest(v["title"])
+        recent = fetch_recent_comments(api_key, v["videoId"], max_results=15)
+        for c in recent:
+            recent_comments_text += f"[{ep_label} {guest}] {c['text']}\n"
+
+    prompt = f"""
+너는 유튜브 웹시리즈 <입금 바랍니다>의 기획/대본/편집을 맡은 메인 PD Rick을 보조하는 보조 작가야(Rick에게 반말함).
+아래 데이터와 최신 댓글을 보고 코멘트나 인사이트를 5~7문장으로 작성해줘.
+스핀오프, 외전 같은 코멘트는 퀄리티에 대한 긍정포인트야
+게스트 라인업은 1이광수, 2김채원, 3기리고(노재원,전소영,현우석), 4안유진, 5공승연, 6남편들(공명,진선규), 7김대명, 8TBD.
+핵심 인사이트, 댓글 반응 온도, 회당 200만뷰의 메가히트를 위한 전향적 제언 위주로.
+숫자는 구체적으로 언급하고, 마지막엔 한 줄 총평으로 마무리해줘.
+
+현재 발행: {len(videos)}화
+누적 조회수: {format_number(total_views)}
+누적 좋아요: {format_number(total_likes)}
+누적 댓글: {format_number(total_comments_count)}
+목표: 8화 × 200만 = 1600만
+
+회차별 현황:
+{ep_summary}
+
+최신 댓글 샘플 (최대 45개):
+{recent_comments_text}
+"""
+
+    with st.spinner("브리핑 생성 중..."):
+        try:
+            import google.generativeai as genai
+            gemini_key = st.secrets["GEMINI_API_KEY"]
+            genai.configure(api_key=gemini_key)
+            model = genai.GenerativeModel("gemini-2.5-flash")
+            response = model.generate_content(prompt)
+            st.markdown(f"""
+            <div style='background:#1a1a1a; border-left:4px solid #ff0000; border-radius:8px; padding:1rem 1.2rem; color:#e0e0e0; font-size:0.92rem; line-height:1.7;'>
+            {response.text}
+            </div>
+            """, unsafe_allow_html=True)
+        except Exception as e:
+            st.error(f"브리핑 생성 실패: {e}")
+
+st.markdown("---")
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 KST = datetime.timezone(datetime.timedelta(hours=9))
